@@ -1,3 +1,4 @@
+def dockerImage
 pipeline {
 	agent none
 	environment {
