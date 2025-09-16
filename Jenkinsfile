@@ -1,4 +1,5 @@
 pipeline {
+	agent none
 	environment {
 		DOCKER_HUB_CREDENTIALS_ID = 'jen-dockerhub'
 		DOCKER_HUB_REPO = 'kilmerx/nodeapp'
