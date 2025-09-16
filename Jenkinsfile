@@ -41,11 +41,11 @@ pipeline {
 		                -v $(pwd):/workspace \
 		                -w /workspace \
 		                aquasec/trivy:latest \
-		                image --severity HIGH,CRITICAL --no-progress --format table -o /workspace/trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
+		                image --severity HIGH,CRITICAL --no-progress --format table -o ./trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
 		        '''
 		        
 		        // Archive report from Jenkins workspace
-		        archiveArtifacts artifacts: 'trivy-scan-report.txt', fingerprint: true
+		        archiveArtifacts artifacts: '/var/jenkins_home/workspace/nodeApp@2/trivy-scan-report.txt', fingerprint: true
 		        
 		        // Display report
 		        sh 'cat trivy-scan-report.txt'
