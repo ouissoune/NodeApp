@@ -3,6 +3,9 @@ pipeline {
 		docker {
 			image 'node-16:alpine'
 		}
+		docker {
+			image 'bitnami/trivy:latest'
+		}
 	}
 	
 	environment {
@@ -41,4 +44,5 @@ pipeline {
 				}
 			}
 		}
+}
 }
