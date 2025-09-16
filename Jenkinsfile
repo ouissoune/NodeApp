@@ -41,13 +41,17 @@ pipeline {
 		                -v $(pwd):/workspace \
 		                -w /workspace \
 		                aquasec/trivy:latest \
-		                image --severity HIGH,CRITICAL --no-progress --format table --output trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
+		                image --severity HIGH,CRITICAL --no-progress --format table -o /workspace/trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
 		        '''
 		        
+		        // Archive report from Jenkins workspace
 		        archiveArtifacts artifacts: 'trivy-scan-report.txt', fingerprint: true
+		        
+		        // Display report
 		        sh 'cat trivy-scan-report.txt'
 		    }
 		}
+
 
 
 		stage('Push Image to DockerHub'){
