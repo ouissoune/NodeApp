@@ -40,17 +40,15 @@ pipeline {
 		                -v /var/run/docker.sock:/var/run/docker.sock \
 		                -v $(pwd):/workspace \
 		                -w /workspace \
-		                bitnami/trivy:latest \
-		                trivy image --severity HIGH,CRITICAL --no-progress --format table --output trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
+		                aquasec/trivy:latest \
+		                image --severity HIGH,CRITICAL --no-progress --format table --output trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
 		        '''
 		        
-		        // Archive the scan report
 		        archiveArtifacts artifacts: 'trivy-scan-report.txt', fingerprint: true
-		        
-		        // Display scan results in console (optional)
 		        sh 'cat trivy-scan-report.txt'
 		    }
 		}
+
 
 		stage('Push Image to DockerHub'){
 			steps {
