@@ -34,23 +34,30 @@ pipeline {
 			}
 		}
 		stage('Trivy Scan') {
+		    agent {
+		        docker {
+		            image 'aquasec/trivy:latest'
+		            args '-v /var/run/docker.sock:/var/run/docker.sock'
+		        }
+		    }
 		    steps {
 		        sh '''
-		            docker run --rm \
-		                -v /var/run/docker.sock:/var/run/docker.sock \
-		                -v $(pwd):/workspace \
-		                -w /workspace \
-		                aquasec/trivy:latest \
-		                image --severity HIGH,CRITICAL --no-progress --format table -o ./trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
+		            trivy image \
+		                --severity HIGH,CRITICAL \
+		                --no-progress \
+		                --format table \
+		                -o trivy-scan-report.txt \
+		                ${DOCKER_HUB_REPO}:latest
 		        '''
-		        
-		        // Archive report from Jenkins workspace
-		        archiveArtifacts artifacts: '/var/jenkins_home/workspace/nodeApp@2/trivy-scan-report.txt', fingerprint: true
-		        
-		        // Display report
+		
+		        // Archive the scan report (relative path, not absolute)
+		        archiveArtifacts artifacts: 'trivy-scan-report.txt', fingerprint: true
+		
+		        // Print results in console
 		        sh 'cat trivy-scan-report.txt'
 		    }
 		}
+
 
 
 
