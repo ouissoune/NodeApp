@@ -33,16 +33,18 @@ pipeline {
 				}
 			}
 		}
-		stage('Trivy Scan'){
-				agent {
-		docker {
-			image 'bitnami/trivy:latest'
+		stage('Trivy Scan') {
+		    agent {
+		        docker {
+		            image 'bitnami/trivy:latest'
+		            args '--entrypoint=""'
+		        }
+		    }
+		    steps {
+		        sh 'trivy --severity HIGH,CRITICAL --no-progress image --format table -o trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest'
+		    }
 		}
-	}
-			steps {
-				sh 'trivy --severity HIGH,CRITICAL --no-progress image --format table -o trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest'
-			}
-		}
+
 		stage('Push Image to DockerHub'){
 			steps {
 				script {
