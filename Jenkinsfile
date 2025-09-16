@@ -35,17 +35,18 @@ pipeline {
 		}
 		stage('Trivy Scan') {
 		    steps {
-		        script {
-		            docker.image('bitnami/trivy:latest').inside('--entrypoint=""') {
-		                sh 'trivy --severity HIGH,CRITICAL --no-progress image --format table -o trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest'
-		                
-		                // Optional: Archive the scan report
-		                archiveArtifacts artifacts: 'trivy-scan-report.txt', fingerprint: true
-		                
-		                // Optional: Display scan results in console
-		                sh 'cat trivy-scan-report.txt'
-		            }
-		        }
+		        sh '''
+		            docker run --rm \
+		                -v /var/run/docker.sock:/var/run/docker.sock \
+		                -v $(pwd):/workspace \
+		                -w /workspace \
+		                bitnami/trivy:latest \
+		                trivy --severity HIGH,CRITICAL --no-progress image --format table -o trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest
+		        '''
+		        
+		        // Archive and display results
+		        archiveArtifacts artifacts: 'trivy-scan-report.txt', fingerprint: true
+		        sh 'cat trivy-scan-report.txt'
 		    }
 		}
 
