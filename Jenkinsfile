@@ -1,21 +1,25 @@
 pipeline {
-	agent {
-		docker {
-			image 'node:16-alpine'
-		}
-	}
-	
 	environment {
 		DOCKER_HUB_CREDENTIALS_ID = 'jen-dockerhub'
 		DOCKER_HUB_REPO = 'kilmerx/nodeapp'
 	}
 	stages {	
 		stage('Install node dependencies'){
+				agent {
+		docker {
+			image 'node:16-alpine'
+		}
+	}
 			steps {
 				sh 'npm install'
 			}
 		}
 		stage('Test Code'){
+				agent {
+		docker {
+			image 'node:16-alpine'
+		}
+	}
 			steps {
 				sh 'npm test'
 			}
@@ -28,6 +32,11 @@ pipeline {
 			}
 		}
 		stage('Trivy Scan'){
+				agent {
+		docker {
+			image 'bitnami/trivy:latest'
+		}
+	}
 			steps {
 				sh 'trivy --severity HIGH,CRITICAL --no-progress image --format table -o trivy-scan-report.txt ${DOCKER_HUB_REPO}:latest'
 			}
